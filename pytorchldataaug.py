@@ -61,6 +61,13 @@ def center_crop(img):
     return transform(img)
 
 
+def random_crop(img):
+    transform = torchvision.transforms.Compose([
+        torchvision.transforms.RandomCrop([224, 224], [4, 4, 4, 4], True)
+    ])
+    return transform(img)
+
+
 """
 source: https://blog.csdn.net/u013685264/article/details/122562509
 """
@@ -126,24 +133,32 @@ def do_dataaug(root_dir):
                     img = Image.open(f).convert('RGB')
                     f1 = resize_img(img)
                     f1.save(img_path)
+
                     f2 = random_rotation(img)
                     f2.save(img_path.split('.')[0] + '_' + str(2) + '.jpg')
+
                     f3 = random_horizontal_flip(img)
                     f3.save(img_path.split('.')[0] + '_' + str(3) + '.jpg')
+
                     f4 = gaussian_blur(img)
                     f4.save(img_path.split('.')[0] + '_' + str(4) + '.jpg')
+
                     f5 = random_vertical_flip(f1)
                     f5 = torchvision.transforms.ToTensor()(f5)
+
                     n_holes = random.choice(list(range(1, 5)))
                     cut = Cutout(n_holes=n_holes, length=16)
                     f5 = cut(f5)
                     f5 = torchvision.transforms.ToPILImage()(f5)
                     f5.save(img_path.split('.')[0] + '_' + str(5) + '.jpg')
 
+                    f6 = random_crop(img)
+                    f6.save(img_path.split('.')[0] + '_' + str(6) + '.jpg')
+
     sys.stdin.flush()  # 刷新
 
 
-root_dir = "D:\\epimgtxtretrieval\\dataset\\traindataset"
+root_dir = "D:\\tempImg"
 # root_dir = "D:\\epimgtxtretrieval\\dataset\\test"
 
 do_dataaug(root_dir)
